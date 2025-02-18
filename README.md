@@ -1,5 +1,4 @@
-# react-and-spring-data-rest
-
+# react-spring-ci-cd-infra"
 The application has a react frontend and a Spring Boot Rest API, packaged as a single module Maven application.
 
 You can build the application running (`./mvnw clean verify`), that will generate a Spring Boot flat JAR in the target folder.
