@@ -1,0 +1,67 @@
+name: Deployment Pipeline
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: "Select deployment environment"
+        required: true
+        type: choice
+        options:
+          - dev
+          - test
+          - production
+
+jobs:
+  deploy:
+    name: Deploy to ${{ github.event.inputs.environment }}
+    runs-on: ubuntu-latest
+    environment: ${{ github.event.inputs.environment }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up kubectl
+        uses: azure/setup-kubectl@v3
+        with:
+          version: 'latest'
+
+      - name: Configure AKS Credentials
+        run: az aks get-credentials --resource-group myResourceGroup --name myAKSCluster
+
+      - name: Deploy to Kubernetes
+        run: |
+          kubectl apply -f kubernetes/deployments/${{ github.event.inputs.environment }}-deployment.yaml
+          kubectl apply -f kubernetes/services/${{ github.event.inputs.environment }}-service.yaml
+          kubectl rollout status deployment my-springboot-app -n ${{ github.event.inputs.environment }}
+
+  manual-approval:
+    name: Manual Approval for Production
+    if: github.event.inputs.environment == 'production'
+    needs: deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Await Manual Approval
+        uses: hmarr/auto-approve-action@v3
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          allowed-actors: "highelf"  # Replace with your GitHub username
+          comment: "Production deployment requires approval. Approve to continue."
+
+  apply-production:
+    name: Apply Production Deployment
+    if: github.event.inputs.environment == 'production'
+    needs: manual-approval
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Configure AKS Credentials
+        run: az aks get-credentials --resource-group myResourceGroup --name myAKSCluster
+
+      - name: Apply Kubernetes Configs
+        run: |
+          kubectl apply -f kubernetes/deployments/production-deployment.yaml
+          kubectl apply -f kubernetes/services/production-service.yaml
+          kubectl rollout status deployment my-springboot-app -n production
