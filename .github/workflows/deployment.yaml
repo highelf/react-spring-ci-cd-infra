@@ -62,6 +62,7 @@ jobs:
 
       - name: Apply Kubernetes Configs
         run: |
-          kubectl apply -f kubernetes/deployments/production-deployment.yaml
-          kubectl apply -f kubernetes/services/production-service.yaml
-          kubectl rollout status deployment my-springboot-app -n production
+          kubectl apply -f kubernetes/app-deployment.yaml
+          kubectl apply -f kubernetes/redis-deployment.yaml
+          kubectl apply -f kubernetes/mysql-deployment.yaml
+

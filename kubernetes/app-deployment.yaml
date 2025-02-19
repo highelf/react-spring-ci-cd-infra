@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: spring-app
 spec:
-  replicas: 1
+  replicas: 2
   selector:
     matchLabels:
       app: spring-app
@@ -14,20 +14,35 @@ spec:
     spec:
       containers:
       - name: spring-app
-        image: myACRregistry123240dckuv.azurecr.io/spring-app:0.0.1
+        image: myACRregistry123240dckuv.azurecr.io/spring-app:0.0.2
         ports:
         - containerPort: 8080
         env:
         - name: SPRING_DATASOURCE_URL
-          value: "jdbc:mysql://mysql:3306/payroll?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC"
+          valueFrom:
+            configMapKeyRef:
+              name: app-configmap
+              key: SPRING_DATASOURCE_URL
         - name: SPRING_DATASOURCE_USERNAME
-          value: "springuser"
+          valueFrom:
+            secretKeyRef:
+              name: app-secret
+              key: SPRING_DATASOURCE_USERNAME
         - name: SPRING_DATASOURCE_PASSWORD
-          value: "springpassword"
+          valueFrom:
+            secretKeyRef:
+              name: app-secret
+              key: SPRING_DATASOURCE_PASSWORD
         - name: SPRING_REDIS_HOST
-          value: redis
+          valueFrom:
+            configMapKeyRef:
+              name: app-configmap
+              key: SPRING_REDIS_HOST
         - name: SPRING_REDIS_PORT
-          value: "6379"
+          valueFrom:
+            configMapKeyRef:
+              name: app-configmap
+              key: SPRING_REDIS_PORT
 ---
 apiVersion: v1
 kind: Service
@@ -41,4 +56,21 @@ spec:
       port: 8080
       targetPort: 8080
   type: LoadBalancer
-
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: app-configmap
+data:
+  SPRING_DATASOURCE_URL: "jdbc:mysql://mysql:3306/payroll?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC"
+  SPRING_REDIS_HOST: "redis"
+  SPRING_REDIS_PORT: "6379"
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: app-secret
+type: Opaque
+data:
+  SPRING_DATASOURCE_USERNAME: c3ByaW5ndXNlcg==  # base64 encoded value of 'springuser'
+  SPRING_DATASOURCE_PASSWORD: c3ByaW5ncGFzc3dvcmQ=  # base64 encoded value of 'springpassword'
