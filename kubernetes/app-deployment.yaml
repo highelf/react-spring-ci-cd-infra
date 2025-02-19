@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: spring-app
-        image: <your-acr-name>.azurecr.io/spring-app:latest
+        image: myACRregistry123240dckuv.azurecr.io/spring-app:0.0.1
         ports:
         - containerPort: 8080
         env:
@@ -24,6 +24,10 @@ spec:
           value: "springuser"
         - name: SPRING_DATASOURCE_PASSWORD
           value: "springpassword"
+        - name: SPRING_REDIS_HOST
+          value: redis
+        - name: SPRING_REDIS_PORT
+          value: "6379"
 ---
 apiVersion: v1
 kind: Service
@@ -36,4 +40,5 @@ spec:
     - protocol: TCP
       port: 8080
       targetPort: 8080
-  type: ClusterIP
+  type: LoadBalancer
+

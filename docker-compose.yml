@@ -15,6 +15,13 @@ services:
     volumes:
       - mysql-data:/var/lib/mysql
 
+  redis:
+    image: redis:latest
+    container_name: redis-container
+    restart: always
+    ports:
+      - "6379:6379"
+
   app:
     build: .
     container_name: spring-app
@@ -23,10 +30,13 @@ services:
       - "8080:8080"
     depends_on:
       - mysql
+      - redis
     environment:
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/payroll?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
       SPRING_DATASOURCE_USERNAME: springuser
       SPRING_DATASOURCE_PASSWORD: springpassword
+      SPRING_REDIS_HOST: redis
+      SPRING_REDIS_PORT: 6379
 
 volumes:
   mysql-data:

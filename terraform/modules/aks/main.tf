@@ -63,6 +63,11 @@ resource "azurerm_kubernetes_cluster" "aks" {
     node_count      = var.node_count
     vm_size         = var.vm_size
     vnet_subnet_id  = var.subnet_id
+    upgrade_settings {
+    drain_timeout_in_minutes      = 0
+    max_surge                     = "10%"
+    node_soak_duration_in_minutes = 0
+  }
   }
 
   network_profile {
@@ -82,6 +87,12 @@ resource "azurerm_container_registry" "acr" {
   location            = var.location
   sku                 = "Standard"
   admin_enabled       = true
+}
+
+resource "azurerm_role_assignment" "aks_acr_pull" {
+  scope                = azurerm_container_registry.acr.id
+  role_definition_name = "AcrPull"
+  principal_id         = azurerm_kubernetes_cluster.aks.kubelet_identity[0].object_id
 }
 
 resource "azurerm_key_vault" "vault" {
