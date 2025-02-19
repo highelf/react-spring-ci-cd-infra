@@ -65,6 +65,16 @@ variable "mysql_sku" {
   }
 }
 
+variable "key_vault_name" {
+  type    = string
+  default = "myKeyVault"
+}
+
+variable "acr_name" {
+  type    = string
+  default = "myACRregistry123"
+}
+
 variable "users" {
 type = list(object({
     name  = string
