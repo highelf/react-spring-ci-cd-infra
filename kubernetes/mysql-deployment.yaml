@@ -1,18 +1,3 @@
----
-apiVersion: v1
-kind: PersistentVolume
-metadata:
-  name: mysql-pv
-spec:
-  capacity:
-    storage: 1Gi
-  accessModes:
-    - ReadWriteOnce
-  azureDisk:
-    diskName: mysql-disk
-    diskURI: /subscriptions/your-subscription-id/resourceGroups/your-resource-group/providers/Microsoft.Compute/disks/mysql-disk
-  persistentVolumeReclaimPolicy: Retain
----
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
@@ -43,13 +28,25 @@ spec:
         image: mysql:8.0
         env:
         - name: MYSQL_ROOT_PASSWORD
-          value: "rootpassword"
+          valueFrom:
+            secretKeyRef:
+              name: mysql-secret
+              key: MYSQL_ROOT_PASSWORD
         - name: MYSQL_DATABASE
-          value: "payroll"
+          valueFrom:
+            configMapKeyRef:
+              name: mysql-configmap
+              key: MYSQL_DATABASE
         - name: MYSQL_USER
-          value: "springuser"
+          valueFrom:
+            secretKeyRef:
+              name: mysql-secret
+              key: MYSQL_USER
         - name: MYSQL_PASSWORD
-          value: "springpassword"
+          valueFrom:
+            secretKeyRef:
+              name: mysql-secret
+              key: MYSQL_PASSWORD
         ports:
         - containerPort: 3306
         volumeMounts:
@@ -72,3 +69,20 @@ spec:
       port: 3306
       targetPort: 3306
   clusterIP: None
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mysql-configmap
+data:
+  MYSQL_DATABASE: "payroll"
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: mysql-secret
+type: Opaque
+data:
+  MYSQL_ROOT_PASSWORD: cm9vdHBhc3N3b3Jk  # base64 encoded value of 'rootpassword'
+  MYSQL_USER: c3ByaW5ndXNlcg==  # base64 encoded value of 'springuser'
+  MYSQL_PASSWORD: c3ByaW5ncGFzc3dvcmQ=  # base64 encoded value of 'springpassword'
