@@ -28,7 +28,10 @@ module "aks" {
   dns_service_ip = var.aks_dns_service_ip
   resource_group_name     = azurerm_resource_group.aks_rg.name
   resource_group_location = azurerm_resource_group.aks_rg.location
-  depends_on = [module.network]
+  acr_name = var.acr_name
+  location = var.location
+  key_vault_name =  var.key_vault_name
+    depends_on = [module.network]
 }
 
 resource "azurerm_resource_group" "mysql_rg" {
