@@ -42,6 +42,7 @@ echo "export ARM_CLIENT_SECRET=$AZURE_CLIENT_SECRET"
 echo "export ARM_TENANT_ID=$AZURE_TENANT_ID"
 echo "export ARM_ACCESS_KEY=$ARM_ACCESS_KEY"
 echo "export STORAGE_ACCOUNT_NAME=$STORAGE_ACCOUNT_NAME"
+echo "export AZURE_CREDENTIALS=$SP_JSON"
 
 # Done
 echo "Service Principal created successfully and is ready for Terraform!"
