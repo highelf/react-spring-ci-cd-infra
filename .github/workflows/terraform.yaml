@@ -100,11 +100,6 @@ jobs:
     - name: Setup Terraform
       uses: hashicorp/setup-terraform@v1
 
-    # - name: Azure Login
-    #   uses: azure/login@v1
-    #   with:
-    #     creds: ${{ secrets[format('AZURE_CREDENTIALS_{0}',  env.ENVIRONMENT_UPPER)] }}
-
     - name: Download Terraform Plan
       uses: actions/download-artifact@v4
       with:
