@@ -18,20 +18,20 @@ resource "azurerm_resource_group" "aks_rg" {
 }
 
 module "aks" {
-  source  = "./modules/aks"
-  environment = var.environment
-  vm_size = var.aks_vm_size[var.environment]
-  node_count = var.aks_node_count[var.environment]
-  vnet_id     = module.network.vnet_id
-  subnet_id   = module.network.subnet_id
-  service_cidr = var.aks_service_cidr
-  dns_service_ip = var.aks_dns_service_ip
+  source                  = "./modules/aks"
+  environment             = var.environment
+  vm_size                 = var.aks_vm_size[var.environment]
+  node_count              = var.aks_node_count[var.environment]
+  vnet_id                 = module.network.vnet_id
+  subnet_id               = module.network.subnet_id
+  service_cidr            = var.aks_service_cidr
+  dns_service_ip          = var.aks_dns_service_ip
   resource_group_name     = azurerm_resource_group.aks_rg.name
   resource_group_location = azurerm_resource_group.aks_rg.location
-  acr_name = var.acr_name
-  location = var.location
-  key_vault_name =  var.key_vault_name
-    depends_on = [module.network]
+  acr_name                = var.acr_name
+  location                = var.location
+  key_vault_name          = var.key_vault_name
+  depends_on              = [module.network]
 }
 
 resource "azurerm_resource_group" "mysql_rg" {
@@ -40,12 +40,12 @@ resource "azurerm_resource_group" "mysql_rg" {
 }
 
 module "mysql" {
-  source  = "./modules/mysql"
-  mysql_sku = var.mysql_sku[var.environment]
-  environment = var.environment
+  source                  = "./modules/mysql"
+  mysql_sku               = var.mysql_sku[var.environment]
+  environment             = var.environment
   resource_group_name     = azurerm_resource_group.mysql_rg.name
   resource_group_location = azurerm_resource_group.mysql_rg.location
-  depends_on = [module.aks]
+  depends_on              = [module.aks]
 }
 
 # module "iam" {
