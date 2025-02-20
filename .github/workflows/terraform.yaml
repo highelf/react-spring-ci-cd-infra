@@ -6,6 +6,7 @@ on:
       - 'terraform/**'  # Runs only when Terraform files are modified
     branches:
       - main
+      - 'feature/**'
 
   workflow_dispatch:
     inputs:
