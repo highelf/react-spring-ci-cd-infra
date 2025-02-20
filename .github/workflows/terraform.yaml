@@ -41,6 +41,7 @@ jobs:
 
     - name: Set Environment Variable
       run: echo "ENVIRONMENT=${{ github.event.inputs.environment || 'dev' }}" >> $GITHUB_ENV
+    - name: Set Uppercase Environment Variable
       run: echo "ENVIRONMENT_UPPER=$(echo $ENVIRONMENT | tr '[:lower:]' '[:upper:]')" >> $GITHUB_ENV
 
     - name: Azure Login
