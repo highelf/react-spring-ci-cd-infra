@@ -24,10 +24,15 @@ public class DatabaseLoader implements CommandLineRunner {
 	@Override
 	public void run(String... strings) throws Exception {
 
-		Manager greg = this.managers.save(new Manager("greg", "turnquist",
-							"ROLE_MANAGER"));
-		Manager oliver = this.managers.save(new Manager("oliver", "gierke",
-							"ROLE_MANAGER"));
+		Manager greg = this.managers.findByName("greg");
+		if (greg == null) {
+			greg = this.managers.save(new Manager("greg", "turnquist", "ROLE_MANAGER"));
+		}
+
+		Manager oliver = this.managers.findByName("oliver");
+		if (oliver == null) {
+			oliver = this.managers.save(new Manager("oliver", "gierke", "ROLE_MANAGER"));
+		}
 
 		SecurityContextHolder.getContext().setAuthentication(
 			new UsernamePasswordAuthenticationToken("greg", "doesn't matter",
