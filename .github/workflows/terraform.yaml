@@ -2,10 +2,10 @@ name: Terraform Deployment
 
 on:
   push:
-#     paths:
-#         - 'terraform/**'  # Runs only when Terraform files are modified
+    # paths:
+    #   - 'terraform/**'  # Runs only when Terraform files are modified
     branches:
-#       - main
+      # - main
       - terraform-kube 
 
   workflow_dispatch:
@@ -44,6 +44,11 @@ jobs:
 
     - name: Terraform Plan
       working-directory: terraform
+      env:
+        ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+        ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+        ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+        ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
       run: terraform plan -out=tfplan
 
     - name: Save Terraform Plan
@@ -88,6 +93,11 @@ jobs:
 
     - name: Terraform Apply
       working-directory: terraform
+      env:
+        ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+        ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+        ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+        ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
       run: terraform apply -auto-approve tfplan
 
   terraform-destroy:
@@ -108,4 +118,9 @@ jobs:
 
     - name: Terraform Destroy
       working-directory: terraform
+      env:
+        ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+        ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+        ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+        ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
       run: terraform destroy -auto-approve
