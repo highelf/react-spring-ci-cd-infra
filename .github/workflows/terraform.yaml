@@ -44,11 +44,6 @@ jobs:
     - name: Set Uppercase Environment Variable
       run: echo "ENVIRONMENT_UPPER=$(echo $ENVIRONMENT | tr '[:lower:]' '[:upper:]')" >> $GITHUB_ENV
 
-    - name: Azure Login
-      uses: azure/login@v1
-      with:
-        creds: ${{ secrets[format('AZURE_CREDENTIALS_{0}', env.ENVIRONMENT)] }}
-
     - name: Terraform Init
       run: terraform init -backend-config=backend-${{ env.ENVIRONMENT }}.tfbackend
 
