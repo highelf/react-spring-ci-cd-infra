@@ -41,6 +41,7 @@ jobs:
 
     - name: Set Environment Variable
       run: echo "ENVIRONMENT=${{ github.event.inputs.environment || 'dev' }}" >> $GITHUB_ENV
+      run: echo "ENVIRONMENT_UPPER=$(echo $ENVIRONMENT | tr '[:lower:]' '[:upper:]')" >> $GITHUB_ENV
 
     - name: Azure Login
       uses: azure/login@v1
@@ -101,7 +102,7 @@ jobs:
     - name: Azure Login
       uses: azure/login@v1
       with:
-        creds: ${{ secrets[format('AZURE_CREDENTIALS_{0}', env.ENVIRONMENT.upper())] }}
+        creds: ${{ secrets[format('AZURE_CREDENTIALS_{0}',  env.ENVIRONMENT_UPPER)] }}
 
     - name: Download Terraform Plan
       uses: actions/download-artifact@v4
@@ -139,7 +140,7 @@ jobs:
     - name: Azure Login
       uses: azure/login@v1
       with:
-        creds: ${{ secrets[format('AZURE_CREDENTIALS_{0}', env.ENVIRONMENT.upper())] }}
+        creds: ${{ secrets[format('AZURE_CREDENTIALS_{0}',  env.ENVIRONMENT_UPPER)] }}
 
     - name: Terraform Init
       run: terraform init -backend-config=backend-${{ env.ENVIRONMENT }}.tfbackend
