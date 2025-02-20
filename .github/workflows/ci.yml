@@ -5,6 +5,8 @@ on:
     branches:
       - main
       - 'feature/**'
+    branches-ignore:
+      - 'Terraform-kube'
   pull_request:
     branches:
       - main
