@@ -1,3 +1,8 @@
+variable "subscription_id" {}
+variable "client_id" {}
+variable "client_secret" {}
+variable "tenant_id" {}
+
 variable "environment" {
   type    = string
   default = "dev" # Change to test/prod as needed
