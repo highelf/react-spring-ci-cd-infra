@@ -42,19 +42,13 @@ jobs:
     - name: Set Environment Variable
       run: echo "ENVIRONMENT=${{ github.event.inputs.environment || 'dev' }}" >> $GITHUB_ENV
 
+    - name: Azure Login
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets[format('AZURE_CREDENTIALS_{0}', env.ENVIRONMENT)] }}
+
     - name: Terraform Init
-      env:
-        ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-        ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
-        ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
-        ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
-        STORAGE_ACCOUNT_NAME: ${{ secrets.STORAGE_ACCOUNT_NAME }}
-      run: |
-      terraform init -backend-config=backend-${{ env.ENVIRONMENT }}.tfbackend -var "client_id=$ARM_CLIENT_ID" \
--var "client_secret=$ARM_CLIENT_SECRET" \
--var "tenant_id=$ARM_TENANT_ID" \
--var "subscription_id=$ARM_SUBSCRIPTION_ID" \
--var "storage_account_name=$STORAGE_ACCOUNT_NAME"
+      run: terraform init -backend-config=backend-${{ env.ENVIRONMENT }}.tfbackend
 
     - name: Terraform Format Check
       run: terraform fmt -check
@@ -104,6 +98,11 @@ jobs:
     - name: Setup Terraform
       uses: hashicorp/setup-terraform@v1
 
+    - name: Azure Login
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets[format('AZURE_CREDENTIALS_{0}', env.ENVIRONMENT.upper())] }}
+
     - name: Download Terraform Plan
       uses: actions/download-artifact@v4
       with:
@@ -136,6 +135,11 @@ jobs:
 
     - name: Setup Terraform
       uses: hashicorp/setup-terraform@v1
+
+    - name: Azure Login
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets[format('AZURE_CREDENTIALS_{0}', env.ENVIRONMENT.upper())] }}
 
     - name: Terraform Init
       run: terraform init -backend-config=backend-${{ env.ENVIRONMENT }}.tfbackend
