@@ -6,7 +6,7 @@ on:
       - 'terraform/**'  # Runs only when Terraform files are modified
     branches:
       - main
-      - 'feature/**'
+      - terraform-kube 
 
   workflow_dispatch:
     inputs:
