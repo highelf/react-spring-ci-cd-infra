@@ -2,10 +2,10 @@ name: Terraform Deployment
 
 on:
   push:
-    paths:
-      - 'terraform/**'  # Runs only when Terraform files are modified
+    # paths:
+    #   - 'terraform/**'  # Runs only when Terraform files are modified
     branches:
-      - main
+      # - main
       - terraform-kube 
 
   workflow_dispatch:
