@@ -1,9 +1,7 @@
 node_modules
 target
 trash
-.terraform*.*
 .terraform
-.terraform.lock.hcl
 .terraformrc
 .terraformrc.example
 terraform.tfstate
