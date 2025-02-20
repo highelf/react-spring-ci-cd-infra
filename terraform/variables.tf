@@ -29,7 +29,7 @@ variable "subnet_cidr" {
 }
 
 variable "aks_node_count" {
-  type    = map(number)
+  type = map(number)
   default = {
     dev  = 1
     test = 1
@@ -38,26 +38,26 @@ variable "aks_node_count" {
 }
 
 variable "aks_vm_size" {
-    type = map(string)
-    default = {
-        dev = "Standard_D2_v2"
-        test = "Standard_D2_v2"
-        prod = "Standard_D4_v2"
-    }
+  type = map(string)
+  default = {
+    dev  = "Standard_D2_v2"
+    test = "Standard_D2_v2"
+    prod = "Standard_D4_v2"
+  }
 }
 
 variable "aks_service_cidr" {
-  type = string
+  type    = string
   default = "10.1.0.0/16"
 }
 
 variable "aks_dns_service_ip" {
-  type = string
-  default = "10.1.0.10" 
+  type    = string
+  default = "10.1.0.10"
 }
 
 variable "mysql_sku" {
-  type    = map(string)
+  type = map(string)
   default = {
     dev  = "B_Standard_B2s"
     test = "B_Standard_B2s"
@@ -76,26 +76,26 @@ variable "acr_name" {
 }
 
 variable "users" {
-type = list(object({
+  type = list(object({
     name  = string
     role  = string # "developer" or "admin"
     email = string
-}))
-default = [
+  }))
+  default = [
     {
-        name  = "Amir"
-        role  = "admin"
-        email = "amir.modiri.master@gmail.com"
+      name  = "Amir"
+      role  = "admin"
+      email = "amir.modiri.master@gmail.com"
     },
     {
-        name  = "Alice"
-        role  = "developer"
-        email = "alice@example.com"
+      name  = "Alice"
+      role  = "developer"
+      email = "alice@example.com"
     },
     {
-        name  = "Charlie"
-        role  = "developer"
-        email = "charlie@example.com"
+      name  = "Charlie"
+      role  = "developer"
+      email = "charlie@example.com"
     }
-]
+  ]
 }

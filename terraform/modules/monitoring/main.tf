@@ -10,10 +10,10 @@ resource "azurerm_dashboard_grafana" "grafana" {
 }
 
 resource "helm_release" "prometheus" {
-  name       = "prometheus"
-  repository = "https://prometheus-community.github.io/helm-charts"
-  chart      = "prometheus"
-  namespace  = "monitoring"
+  name             = "prometheus"
+  repository       = "https://prometheus-community.github.io/helm-charts"
+  chart            = "prometheus"
+  namespace        = "monitoring"
   create_namespace = true
 }
 
@@ -46,31 +46,31 @@ resource "kubernetes_manifest" "cpu_alert" {
 }
 
 resource "azurerm_grafana_alert_rule" "aks_alert" {
-  name            = "aks-high-cpu-alert"
-  resource_group_name = azurerm_resource_group.monitoring_rg.name
+  name                 = "aks-high-cpu-alert"
+  resource_group_name  = azurerm_resource_group.monitoring_rg.name
   grafana_dashboard_id = azurerm_dashboard_grafana.grafana.id
   condition = {
-    query = "100 * (1 - avg(rate(node_cpu_seconds_total{mode='idle'}[5m])))"
-    operator = "gt"
+    query     = "100 * (1 - avg(rate(node_cpu_seconds_total{mode='idle'}[5m])))"
+    operator  = "gt"
     threshold = 80
   }
-  duration   = "2m"
-  severity   = "Critical"
-  message    = "High CPU usage detected in AKS"
+  duration = "2m"
+  severity = "Critical"
+  message  = "High CPU usage detected in AKS"
 }
 
 resource "azurerm_grafana_alert_rule" "db_alert" {
-  name            = "db-high-cpu-alert"
-  resource_group_name = azurerm_resource_group.monitoring_rg.name
+  name                 = "db-high-cpu-alert"
+  resource_group_name  = azurerm_resource_group.monitoring_rg.name
   grafana_dashboard_id = azurerm_dashboard_grafana.grafana.id
   condition = {
-    query = "100 * (1 - avg(rate(mysql_global_status_cpu_time{mode='idle'}[5m])))"
-    operator = "gt"
+    query     = "100 * (1 - avg(rate(mysql_global_status_cpu_time{mode='idle'}[5m])))"
+    operator  = "gt"
     threshold = 80
   }
-  duration   = "2m"
-  severity   = "Critical"
-  message    = "High CPU usage detected in MySQL Database"
+  duration = "2m"
+  severity = "Critical"
+  message  = "High CPU usage detected in MySQL Database"
 }
 
 output "grafana_url" {
