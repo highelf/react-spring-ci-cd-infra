@@ -2,11 +2,8 @@ name: Terraform Deployment
 
 on:
   push:
-    # paths:
-    #   - 'terraform/**'  # Runs only when Terraform files are modified
     branches:
-      # - main
-      - terraform-kube 
+      - terraform-kube
 
   workflow_dispatch:
     inputs:
@@ -18,6 +15,15 @@ on:
         options:
           - apply
           - destroy
+      environment:
+        description: 'Choose Environment (dev/test/production)'
+        required: true
+        default: 'dev'
+        type: choice
+        options:
+          - dev
+          - test
+          - production
 
 jobs:
   terraform-plan:
@@ -30,9 +36,12 @@ jobs:
     - name: Setup Terraform
       uses: hashicorp/setup-terraform@v1
 
+    - name: Set Environment Variable
+      run: echo "ENVIRONMENT=${{ github.event.inputs.environment || 'dev' }}" >> $GITHUB_ENV
+
     - name: Terraform Init
       working-directory: terraform
-      run: terraform init
+      run: terraform init -backend-config=backend-${{ env.ENVIRONMENT }}.tfbackend
 
     - name: Terraform Format Check
       working-directory: terraform
@@ -49,7 +58,8 @@ jobs:
         ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
         ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
         ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
-      run: terraform plan -out=tfplan
+        STORAGE_ACCOUNT_NAME: ${{ secrets.STORAGE_ACCOUNT_NAME }}
+      run: terraform plan -var-file="b${{ env.ENVIRONMENT }}.tfvars" -var "storage_account_name=$STORAGE_ACCOUNT_NAME" -out=tfplan
 
     - name: Save Terraform Plan
       uses: actions/upload-artifact@v4
@@ -66,7 +76,7 @@ jobs:
       uses: hmarr/auto-approve-action@v3
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
-        allowed-actors: "highelf"  # Replace with your GitHub username
+        allowed-actors: "highelf"
         comment: "Terraform plan is ready. Approve to apply changes."
 
   terraform-apply:
@@ -89,7 +99,7 @@ jobs:
 
     - name: Terraform Init
       working-directory: terraform
-      run: terraform init
+      run: terraform init -backend-config=backend-${{ env.ENVIRONMENT }}.tfbackend
 
     - name: Terraform Apply
       working-directory: terraform
@@ -98,7 +108,8 @@ jobs:
         ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
         ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
         ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
-      run: terraform apply -auto-approve tfplan
+        STORAGE_ACCOUNT_NAME: ${{ secrets.STORAGE_ACCOUNT_NAME }}
+      run: terraform apply -var-file="b${{ env.ENVIRONMENT }}.tfvars" -var "storage_account_name=$STORAGE_ACCOUNT_NAME" -auto-approve tfplan
 
   terraform-destroy:
     name: Terraform Destroy
@@ -114,7 +125,7 @@ jobs:
 
     - name: Terraform Init
       working-directory: terraform
-      run: terraform init
+      run: terraform init -backend-config=backend-${{ env.ENVIRONMENT }}.tfbackend
 
     - name: Terraform Destroy
       working-directory: terraform
@@ -123,4 +134,5 @@ jobs:
         ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
         ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
         ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
-      run: terraform destroy -auto-approve
+        STORAGE_ACCOUNT_NAME: ${{ secrets.STORAGE_ACCOUNT_NAME }}
+      run: terraform destroy -var-file="b${{ env.ENVIRONMENT }}.tfvars" -var "storage_account_name=$STORAGE_ACCOUNT_NAME" -auto-approve
