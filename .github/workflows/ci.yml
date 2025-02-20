@@ -42,18 +42,6 @@ jobs:
         run: |
           docker build -t my-springboot-app:latest -t my-springboot-app:$VERSION .
 
-      - name: Log in to Docker Hub
-        if: success() && env.DOCKER_USERNAME != '' && env.DOCKER_PASSWORD != ''
-        run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
-
-      - name: Push Docker Image to Docker Hub
-        if: success() && env.DOCKER_USERNAME != '' && env.DOCKER_PASSWORD != ''
-        run: |
-          docker tag my-springboot-app:latest ${{ secrets.DOCKER_USERNAME }}/my-springboot-app:latest
-          docker tag my-springboot-app:$VERSION ${{ secrets.DOCKER_USERNAME }}/my-springboot-app:$VERSION
-          docker push ${{ secrets.DOCKER_USERNAME }}/my-springboot-app:latest
-          docker push ${{ secrets.DOCKER_USERNAME }}/my-springboot-app:$VERSION
-
       - name: Log in to Azure Container Registry
         if: success() && env.ACR_LOGIN_SERVER != '' && env.ACR_USERNAME != '' && env.ACR_PASSWORD != ''
         run: echo "${{ secrets.ACR_PASSWORD }}" | docker login ${{ secrets.ACR_LOGIN_SERVER }} -u "${{ secrets.ACR_USERNAME }}" --password-stdin
